@@ -1,80 +1,55 @@
-#include <stdio.h>   
-#include <limits.h>  
-#include <stdlib.h>  
-#include <float.h>   
+#include <stdio.h>
+#include <limits.h> // Untuk INT_MAX, INT_MIN
+#include <float.h>  // Untuk DBL_MAX
 
 int main() {
-    int n;           
-    int *numbers;    
-    int min_val = INT_MAX; 
-    int max_val = INT_MIN; 
-    double min_avg = DBL_MAX; 
+    int n;
+    scanf("%d", &n);
 
-    
-    printf("Masukkan jumlah bilangan yang akan dianalisis (n): ");
-    if (scanf("%d", &n) != 1 || n < 1) { 
-        printf("Masukan tidak valid. n harus merupakan bilangan bulat positif.\n");
-        return 1; 
-    }
+    int minVal = INT_MAX;
+    int maxVal = INT_MIN;
+    double minAvg = DBL_MAX; // Inisialisasi dengan nilai double terbesar
+    int previousValue;
+    int currentValue;
 
-    
-    numbers = (int *)malloc(n * sizeof(int));
-    if (numbers == NULL) {
-        printf("Gagal mengalokasikan memori.\n");
-        return 1; 
-    }
+    // Pastikan ada setidaknya satu nilai untuk diproses
+    if (n > 0) {
+        // Baca nilai pertama
+        scanf("%d", &currentValue);
+        minVal = currentValue;
+        maxVal = currentValue;
+        previousValue = currentValue; // Simpan nilai pertama sebagai previousValue
 
-    
-    printf("Masukkan %d bilangan bulat antara -100 dan 100:\n", n);
-    for (int i = 0; i < n; i++) {
-        printf("Bilangan ke-%d: ", i + 1);
-        if (scanf("%d", &numbers[i]) != 1) {
-            printf("Masukan tidak valid. Mohon masukkan bilangan bulat.\n");
-            free(numbers); 
-            return 1;     
-        }
+        // Iterasi untuk nilai-nilai berikutnya (mulai dari indeks 1 hingga n-1)
+        for (int i = 1; i < n; i++) {
+            scanf("%d", &currentValue);
 
-        
-        if (numbers[i] < -100 || numbers[i] > 100) {
-            printf("Peringatan: Bilangan %d di luar rentang -100 hingga 100. Tetap diproses.\n", numbers[i]);
-        }
-
-        
-        if (numbers[i] < min_val) {
-            min_val = numbers[i];
-        }
-        if (numbers[i] > max_val) {
-            max_val = numbers[i];
-        }
-    }
-
-   
-    if (n < 2) {
-        
-        min_avg = DBL_MAX; 
-    } else {
-        for (int i = 0; i < n - 1; i++) {
-            double current_avg = (double)(numbers[i] + numbers[i+1]) / 2.0;
-            if (current_avg < min_avg) {
-                min_avg = current_avg;
+            // Perbarui nilai minimum dan maksimum keseluruhan
+            if (currentValue < minVal) {
+                minVal = currentValue;
             }
+            if (currentValue > maxVal) {
+                maxVal = currentValue;
+            }
+
+            // Hitung rata-rata pasangan saat ini dan perbarui rata-rata minimum
+            double currentAvg = (double)(previousValue + currentValue) / 2.0;
+            if (currentAvg < minAvg) {
+                minAvg = currentAvg;
+            }
+
+            previousValue = currentValue; // Perbarui previousValue untuk iterasi berikutnya
         }
     }
+    
+    // Tampilkan nilai terkecil dan terbesar
+    printf("%d\n", minVal);
+    printf("%d\n", maxVal);
 
-   
-    printf("\n--- Hasil Analisis ---\n");
-    printf("Nilai terkecil: %d\n", min_val);
-    printf("Nilai terbesar: %d\n", max_val);
-    if (n >= 2) { 
-        printf("Rata-rata terendah dari dua nilai berturut: %.2f\n", min_avg);
-    } else {
-        printf("Tidak cukup bilangan untuk menghitung rata-rata dari dua nilai berturut.\n");
+    // Tampilkan rata-rata terkecil jika ada setidaknya dua nilai (memungkinkan terbentuknya pasangan)
+    if (n >= 2) {
+        printf("%.2f\n", minAvg);
     }
 
-
-    
-    free(numbers);
-
-    return 0; 
+    return 0;
 }
-
